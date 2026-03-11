@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roblox Clone - 3D Game Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* UI Overlay */
+    .ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .ui-element {
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Main Menu */
+    #main-menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 400px;
+      text-align: center;
+    }
+
+    #main-menu h1 {
+      color: #667eea;
+      margin-bottom: 24px;
+      font-size: 2.5em;
+      font-weight: bold;
+    }
+
+    .menu-input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .menu-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .menu-button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .menu-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .room-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 16px 0;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+    }
+
+    .room-item {
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .room-item:hover {
+      background: #f8f9ff;
+    }
+
+    .room-item:last-child {
+      border-bottom: none;
+    }
+
+    /* HUD */
+    #hud {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #toolbar {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .tool-button {
+      width: 50px;
+      height: 50px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tool-button:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    .tool-button.active {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    #chat-container {
+      position: absolute;
+      bottom: 100px;
+      left: 20px;
+      width: 300px;
+      max-height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 8px 8px 0 0;
+      font-size: 14px;
+    }
+
+    .chat-message {
+      margin: 4px 0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .chat-message strong {
+      color: #667eea;
+    }
+
+    #chat-input {
+      padding: 8px;
+      border: 2px solid #e0e0e0;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      font-size: 14px;
+    }
+
+    #player-info {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      min-width: 150px;
+    }
+
+    #color-picker {
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 8px 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Loading indicator */
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      color: white;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px 40px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="canvas-container"></div>
+    
+    <div class="ui-overlay">
+      <!-- Main Menu -->
+      <div id="main-menu" class="ui-element">
+        <h1>🎮 Roblox Clone</h1>
+        
+        <input type="text" id="player-name" class="menu-input" placeholder="Ваше имя" maxlength="20">
+        
+        <button class="menu-button" onclick="createRoom()">Создать комнату</button>
+        
+        <div style="margin: 16px 0;">
+          <strong>Или присоединиться к комнате:</strong>
+        </div>
+        
+        <div id="room-list" class="room-list">
+          <div style="padding: 12px; text-align: center; color: #999;">Загрузка комнат...</div>
+        </div>
+        
+        <button class="menu-button" onclick="refreshRooms()">Обновить список</button>
+      </div>
+
+      <!-- HUD -->
+      <div id="hud">
+        <div id="toolbar">
+          <button class="tool-button active" onclick="selectTool('move')" title="Перемещение">🚶</button>
+          <button class="tool-button" onclick="selectTool('cube')" title="Куб">📦</button>
+          <button class="tool-button" onclick="selectTool('sphere')" title="Сфера">⚽</button>
+          <button class="tool-button" onclick="selectTool('platform')" title="Платформа">🟫</button>
+          <button class="tool-button" onclick="selectTool('delete')" title="Удалить">🗑️</button>
+        </div>
+
+        <div id="chat-container" class="ui-element">
+          <div id="chat-messages"></div>
+          <input type="text" id="chat-input" placeholder="Напишите сообщение..." onkeypress="handleChatKeyPress(event)">
+        </div>
+
+        <div id="player-info" class="ui-element">
+          <strong>Инструменты</strong>
+          <div style="margin-top: 8px;">
+            <label for="color-picker">Цвет объекта:</label>
+            <input type="color" id="color-picker" value="#ff6b6b">
+          </div>
+          <div style="margin-top: 12px; font-size: 14px;">
+            <div><strong>Имя:</strong> <span id="display-name"></span></div>
+            <div><strong>Комната:</strong> <span id="room-id-display"></span></div>
+          </div>
+          <button class="menu-button" onclick="leaveRoom()" style="margin-top: 12px;">Покинуть комнату</button>
+        </div>
+      </div>
+
+      <div id="loading" class="loading hidden">Загрузка...</div>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
