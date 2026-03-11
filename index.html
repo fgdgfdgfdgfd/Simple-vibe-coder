@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldGuesser - Geography Guessing Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=streetview"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="game-header">
+            <h1>🌍 WorldGuesser</h1>
+            <div class="game-info">
+                <span class="round-info">Round: <span id="current-round">1</span>/5</span>
+                <span class="score-info">Score: <span id="total-score">0</span></span>
+            </div>
+        </header>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="start-content">
+                <h2>Welcome to WorldGuesser!</h2>
+                <p>Explore random locations around the world and guess where you are!</p>
+                <div class="features">
+                    <div class="feature">
+                        <span class="feature-icon">🗺️</span>
+                        <p>Google Street View for worldwide locations</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🇷🇺</span>
+                        <p>Yandex Street View for Russian locations</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🎯</span>
+                        <p>Click on the map to make your guess</p>
+                    </div>
+                </div>
+                <button id="start-btn" class="btn-primary">Start Game</button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="streetview-container">
+                <div id="streetview"></div>
+                <div class="guess-button-container">
+                    <button id="make-guess-btn" class="btn-primary">Make Guess</button>
+                </div>
+            </div>
+            
+            <div id="map-container" class="map-container hidden">
+                <div class="map-header">
+                    <h3>Where are you?</h3>
+                    <button id="close-map-btn" class="btn-secondary">✕</button>
+                </div>
+                <div id="map"></div>
+                <div class="guess-controls">
+                    <button id="submit-guess-btn" class="btn-primary">Submit Guess</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <div class="result-content">
+                <h2 id="result-title">Round Complete!</h2>
+                <div class="result-details">
+                    <div class="result-item">
+                        <span class="label">Your Guess:</span>
+                        <span id="user-guess" class="value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Actual Location:</span>
+                        <span id="actual-location" class="value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Distance:</span>
+                        <span id="distance" class="value"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Points:</span>
+                        <span id="round-points" class="value"></span>
+                    </div>
+                </div>
+                <div id="result-map"></div>
+                <button id="next-round-btn" class="btn-primary">Next Round</button>
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="screen">
+            <div class="end-content">
+                <h2>Game Over!</h2>
+                <div class="final-score">
+                    <span class="score-label">Final Score</span>
+                    <span id="final-score" class="score-value">0</span>
+                    <span class="score-max">/ 25000</span>
+                </div>
+                <div class="performance-message" id="performance-message"></div>
+                <button id="play-again-btn" class="btn-primary">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
